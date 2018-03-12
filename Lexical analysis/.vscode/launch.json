@@ -10,6 +10,7 @@
 			"name": "Iniciar programa",
 			"program": "${workspaceFolder}/index.js",
 			"console": "integratedTerminal"
+			//"args": ["myFile.txt"]
 		}
 	]
 }
