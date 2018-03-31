@@ -1,54 +1,271 @@
 const grammar = {
+	START: {
+		'FUNCTION START': ['FUNCTION'],
+		'STAT START': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'EMPTY': ['EOF']
+	},
 	STAT: {
-		SIMPSTAT: [
-			'ID',
-			'LOG',
-			'IMPORT',
-			'FROM',
-			'RETURN',
-			'INT',
-			'FLOAT',
-			'TRUE',
-			'FALSE',
-			'STRING',
-			'LBRA',
-			'LKEY',
-			'NIL',
-			'LPAR'
-		],
-		COMPSTAT: ['IF', 'WHILE', 'FOR', 'FUNCTION']
+		'SIMP_STAT': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR'],
+		'COMP_STAT': ['IF', 'WHILE', 'FOR', 'FUNCTION']
+	},
+	COMP_STAT: {
+		'IF_STAT': ['IF'],
+		'WHILE_STAT': ['WHILE'],
+		'FOR_STAT': ['FOR'],
+		'FUNCTION_STAT': ['FUNCTION']
+	},
+	SIMP_STAT: {
+		'ASSIGN': ['ID'],
+		'LOG': ['LOG'],
+		'IMPORT': ['IMPORT', 'FROM'],
+		'RETURN': ['RETURN'],
+		'F': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR']
+	},
+	IF_STAT: {
+		'if EXPR BLOCK ELSE': ['IF']
+	},
+	ELSE: {
+		'else ELSE_PRIM': ['ELSE'],
+		'EMPTY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'NEWLINE', 'RKEY', 'EOF']
+	},
+	ELSE_PRIM: {
+		'IF_STAT': ['IF'],
+		'BLOCK': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+	},
+	WHILE_STAT: {
+		'while EXPR BLOCK': ['WHILE']
+	},
+	FOR_STAT: {
+		'for id in EXPR BLOCK': ['FOR']
+	},
+	FUNCTION: {
+		'function id lpar FUNC_PARAM rpar FUNC_BODY end': ['FUNCTION']
+	},
+	FUNC_PARAM: {
+		'PARAM MORE_FUNC_PARAM': ['ID'],
+		'EMPTY': ['RPAR']
+	},
+	MORE_FUNC_PARAM: {
+		'comma PARAM MORE_FUNC_PARAM': ['COMMA'],
+		'EMPTY': ['RPAR']
+	},
+	PARAM: {
+		'id PARAM_PRIM': ['ID']
+	},
+	PARAM_PRIM: {
+		'assign EXPR': ['ASSIGN'],
+		'EMPTY': ['COMMA','RPAR']
+	},
+	FUNC_BODY: {
+		'STAT FUNC_BODY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'EMPTY': ['END']
+	},
+	ASSIGN: {
+		'VARIABLE assign EXPR': ['ID']
+	},
+	LOG: {
+		'log lpar EXPR rpar': ['LOG']
+	},
+	IMPORT: {
+		'import id SUB_IMPORT': ['IMPORT'],
+		'from id import id': ['FROM']
+	},
+	SUB_IMPORT: {
+		'point id SUB_IMPORT': ['POING'],
+		'EMPTY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'NEWLINE', 'RKEY', 'EOF']
+	},
+	RETURN: {
+		'return lpar EXPR rpar': ['RETURN']
+	},
+	BLOCK: {
+		'lkey BLOCK_BODY rkey': ['LKEY'],
+		'STAT': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION']
+	},
+	BLOCK_BODY: {
+		'STAT BLOCK_BODY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'BLOCK_BODY': ['NEWLINE'],
+		'EMPTY': ['RKEY']
+	},
+	EXPR: {
+		'EBOOL EXPR_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS', 'NOT']
+	},
+	EXPR_PRIM: {
+		'or EBOOL EXPR_PRIM': ['OR'],
+		'EMPTY': ['ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+	},
+	EBOOL: {
+		'EXPREL EBOOL_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS'],
+		'not EXPREL EBOOL_PRIM': ['NOT']
+	},
+	EBOOL_PRIM: {
+		'and EXPREL EBOOL_PRIM': ['AND'],
+		'EMPTY': ['OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+	},
+	EXPREL: {
+		'E EXPREL_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS']
+	},
+	EXPREL_PRIM: {
+		'oprel E': ['OPREL'],
+		'EMPTY': ['AND', 'OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+	},
+	E: {
+		'T E_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS']
+	},
+	E_PRIM: {
+		'opsum T E_PRIM': ['OPSUM'],
+		'EMPTY': ['OPREL', 'AND', 'OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+	},
+	T: {
+		'F T_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR'],
+		'minus F T_PRIM': ['MINUS']
+	},
+	T_PRIM: {
+		'opmul F T_PRIM': ['OPMUL'],
+		'EMPTY': ['OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBAR', 'COMMA']
+	},
+	F: {
+		'int': ['INT'],
+		'float': ['FLOAT'],
+		'true': ['TRUE'],
+		'false': ['FALSE'],
+		'string': ['STRING'],
+		'ARRAY': ['LBRA'],
+		'OBJECT': ['LKEY'],
+		'VARIABLE F_PRIM': ['ID'],
+		'nil': ['NIL'],
+		'lpar EXPR rpar': ['LPAR']
+	},
+	F_PRIM: {
+		'lbra EXPR rbra': ['LKEY'],
+		'EMPTY': ['OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+	},
+	ARRAY: {
+		'lbra ITEM_ARRAY rbra': ['lbra']
+	},
+	ITEM_ARRAY: {
+		'EXPR MORE_ITEM_A': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS', 'NOT'],
+		'EMPTY': ['RBRA']
+	},
+	MORE_ITEM_A: {
+		'comma EXPR MORE_ITEM_A': ['COMMA'],
+		'EMPTY': ['RBRA']
+	},
+	OBJECT: {
+		'lkey ITEM_OBJECT rkey': ['LKEY']
+	},
+	ITEM_OBJECT: {
+		'id points EXPR MORE_ITEM_O': ['ID'],
+		'EMPTY': ['RKEY']
+	},
+	MORE_ITEM_O: {
+		'comma id points EXPR MORE_ITEM_O': ['COMMA'],
+		'EMPTY': ['RKEY']
+	},
+	VARIABLE: {
+		'id SUB_VAR VARIABLE_PRIM': ['ID']
+	},
+	VARIABLE_PRIM: {
+		'SUB_VAR_FUNC': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA'],
+		'lbra EXPR rbra': ['LBRA']
+	},
+	SUB_VAR: {
+		'point id SUB_VAR': ['POINT'],
+		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA']
+	},
+	SUB_VAR_FUNC: {
+		'lpar SUB_VAR_FUNC_PARAM rpar': ['LPAR'],
+		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA']
+	},
+	SUB_VAR_FUNC_PARAM: {
+		'EXPR MORE_SUB_VAR_FUNC_PARAM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS', 'NOT'],
+		'EMPTY': ['RPAR']
+	},
+	MORE_SUB_VAR_FUNC_PARAM: {
+		'comma EXPR MORE_SUB_VAR_FUNC_PARAM': ['COMMA'],
+		'EMPTY': ['RPAR']
 	}
 };
 const terminals = {
-	'LKEY': 'token_llave_izq',
-	'RKEY': 'token_llave_der',
-	'COMMENT': 'token_com',
-	'LBRA': 'token_cor_izq',
-	'RBRA': 'token_cor_der',
-	'LPAR': 'token_par_izq',
-	'RPAR': 'token_par_der',
-	'LT': 'token_mayor',
-	'GT': 'token_menor',
-	'LTEQ': 'token_menor_igual',
-	'GTEQ': 'token_mayor_igual',
-	'EQ': 'token_igual_num',
-	'NEQ': 'token_diff_num',
-	'POINT': 'token_point',
-	'AND': 'token_and',
-	'OR': 'token_or',
-	'NOT': 'token_not',
-	'PLUS': 'token_mas',
-	'MINUS': 'token_menos',
-	'MULT': 'token_mul',
-	'DIV': 'token_div',
-	'MOD': 'token_mod',
-	'POT': 'token_pot',
-	'ASSIGN': 'token_assign',
-	'COMMA': 'token_coma',
-	'POINTS': 'token_dosp',
-	'INT': 'token_integer',
-	'FLOAT': 'token_float',
-	'STRING': 'token_string',
+	'token_llave_izq': 'LKEY',
+	'token_llave_der': 'RKEY',
+	'token_com': 'COMMENT',
+	'token_cor_izq': 'LBRA',
+	'token_cor_der': 'RBRA',
+	'token_par_izq': 'LPAR',
+	'token_par_der': 'RPAR',
+	'token_mayor': 'LT',
+	'token_menor': 'GT',
+	'token_menor_igual': 'LTEQ',
+	'token_mayor_igual': 'GTEQ',
+	'token_igual_num': 'EQ',
+	'token_diff_num': 'NEQ',
+	'token_point': 'POINT',
+	'token_and': 'AND',
+	'token_or': 'OR',
+	'token_not': 'NOT',
+	'token_mas': 'PLUS',
+	'token_menos': 'MINUS',
+	'token_mul': 'MULT',
+	'token_div': 'DIV',
+	'token_mod': 'MOD',
+	'token_pot': 'POT',
+	'token_assign': 'ASSIGN',
+	'token_coma': 'COMMA',
+	'token_dosp': 'POINTS',
+	'token_integer': 'INT',
+	'token_float': 'FLOAT',
+	'token_string': 'STRING',
+	'false': 'FALSE',
+	'true': 'TRUE',
+	'log': 'LOG',
+	'importar': 'IMPORT',
+	'desde': 'FROM',
+	'if': 'IF',
+	'while': 'WHILE',
+	'for': 'FOR',
+	'funcion': 'FUNCTION',
+	'in': 'IN',
+	'else': 'ELSE',
+	'end': 'END',
+	'retorno': 'RETURN',
+	'nil': 'NIL',
+	'id': 'ID',
+	'EOF':'EOF'
+};
+const translateTerminals = {
+	'LKEY': '[',
+	'RKEY': ']',
+	'COMMENT': '·',
+	'LBRA': '{',
+	'RBRA': '}',
+	'LPAR': '(',
+	'RPAR': ')',
+	'OPREL': {
+		'LT': '<',
+		'GT': '>',
+		'LTEQ': '<=',
+		'GTEQ': '>=',
+		'EQ': '==',
+		'NEQ': '!='
+	},
+	'POINT': '.',
+	'AND': '&&',
+	'OR': '||',
+	'NOT': '!',
+	'OPSUM': {
+		'PLUS': '+',
+		'MINUS': '-'
+	},
+	'MINUS': '-',
+	'OPMUL': {
+		'MULT': '*',
+		'DIV': '/'
+	},
+	'MOD': '%',
+	'POT': '^',
+	'ASSIGN': '=',
+	'COMMA': ',',
+	'POINTS': ':',
 	'FALSE': 'false',
 	'TRUE': 'true',
 	'LOG': 'log',
@@ -63,9 +280,15 @@ const terminals = {
 	'END': 'end',
 	'RETURN': 'retorno',
 	'NIL': 'nil',
-	'ALL': 'todo',
-	'ID': 'id'
+	'ID': 'identificador',
+	'STRING': 'valor_string',
+	'INT': 'valor_integer',
+	'FLOAT': 'valor_float',
+	'NEWLINE': '\n'
 };
+const oprelSymbols = ['LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ'];
+const opsumSymbols = ['PLUS', 'MINUS'];
+const opmulSymbols = ['MUL', 'DIV'];
 const specialOperatorsDict = {
 	'{': 'token_llave_izq',
 	'}': 'token_llave_der',
@@ -95,7 +318,7 @@ const specialOperatorsDict = {
 	':': 'token_dosp'
 };
 const specialOperators = Object.keys(specialOperatorsDict);
-const reservedWords = ['false', 'true', 'for', 'while', 'funcion', 'if', 'in', 'importar', 'else', 'end', 'retorno', 'nil', 'desde', 'todo'];
+const reservedWords = ['false', 'true', 'for', 'while', 'funcion', 'if', 'in', 'importar', 'else', 'end', 'retorno', 'nil', 'desde', 'todo','EOF'];
 const idRegExp = /[a-z0-9]/i;
 const numRegExp = /[0-9]/;
 const delta = (state, character) => {
@@ -149,12 +372,17 @@ const delta = (state, character) => {
 
 let line = 1;
 let column = 1;
-let stdin_input='';
+let stdin_input = '';
+let currentToken = undefined;
 
 const getToken = () => {
 	let lastStatus = 1;
 	let newStatus;
 	let currentLexeme = [];
+	if (stdin_input[0] === '\n') {
+		line++;
+		stdin_input = stdin_input.slice(1);
+	}
 	do {
 		const character = stdin_input[0];
 		newStatus = delta(lastStatus, character);
@@ -246,8 +474,7 @@ const getToken = () => {
 						error: `>>> Error lexico(linea:${line},posicion:${column})`
 					};
 			}
-			line++;
-			column = 1;
+			column += lexeme.length;
 			return token;
 		} else {
 			if (newStatus !== 1) currentLexeme.push(character);
@@ -259,33 +486,99 @@ const getToken = () => {
 	} while (stdin_input || newStatus !== -1);
 };
 
+const syntaxError = (listExpectedTokens) => {
+	let translatedCurrentToken = '';
+	const terminalCurrentToken = terminals[currentToken.type];
+	if (oprelSymbols.includes(terminalCurrentToken))
+		translatedCurrentToken = translateTerminals.OPREL[terminalCurrentToken];
+	else if (opmulSymbols.includes(terminalCurrentToken))
+		translatedCurrentToken = translateTerminals.OPMUL[terminalCurrentToken];
+	else if (opsumSymbols.includes(terminalCurrentToken))
+		translatedCurrentToken = translateTerminals.OPSUM[terminalCurrentToken];
+	else translatedCurrentToken = translateTerminals[terminalCurrentToken];
+	const translatedExpectedTokens = listExpectedTokens.map(item => `'${translateTerminals[item]}'`);
+	console.log(`<${currentToken.line}:${currentToken.column}> Error sintactico. Encontrado: '${translatedCurrentToken}'; se esperaba: ${translatedExpectedTokens.sort().join(',')}`);
+	process.exit();
+};
+
+const match = (expectedToken) => {
+	const tokenType = terminals[currentToken.type];
+	if (
+		(expectedToken === 'OPREL' && oprelSymbols.includes(tokenType)) ||
+		(expectedToken === 'OPMUL' && opmulSymbols.includes(tokenType)) ||
+		(expectedToken === 'OPSUM' && opsumSymbols.includes(tokenType)) ||
+		tokenType === expectedToken
+	) currentToken = getToken();
+	else {
+		if (expectedToken === 'OPREL')
+			syntaxError(oprelSymbols);
+		else if (expectedToken === 'OPMUL')
+			syntaxError(opmulSymbols);
+		else if (expectedToken === 'OPSUM')
+			syntaxError(opsumSymbols);
+		else for (const item in translateTerminals)
+				if (item === expectedToken) {
+					syntaxError([item]);
+					break;
+				}
+	}
+};
+
+const getCurrentToken = () => {
+	return currentToken;
+};
+
 const functions = {};
 for (const symbol in grammar) {
 	let totalProductions = [];
-	let functionBody = 'const currentToken = getToken();\nconst tokenType = terminals[currentToken.type];\n';
+	let functionBody = 'const tokenType =' +
+		' this.terminals[this.getCurrentToken().type];\n';
 	for (const production in grammar[symbol]) {
 		if (!grammar[symbol].hasOwnProperty(production)) continue;
 		const symbolsInProduction = production.split(' ');
 		const predictionList = grammar[symbol][production];
-		totalProductions = totalProductions.concat(predictionList);
+		totalProductions = totalProductions.concat(predictionList.filter(item => !totalProductions.includes(item)));
 		functionBody += 'if (' +
-			predictionList.map((item) => `tokenType === ${item}`).join(' || ') + '){\n\t';
+			predictionList.map((item) => {
+				if (item === 'OPREL' || item === 'OPSUM' || item === 'OPMUL')
+					return `this.${item.toLowerCase()}Symbols.includes(tokenType)`;
+				return `tokenType === '${item}'`;
+			}).join(' || ') + '){\n';
 		functionBody +=
 			symbolsInProduction
-				.map((item) => (/^[A-Z]*$/.test(item) ? `${item}();` : `match(${item});`))
+				.map((item) => {
+					if (item === 'EMPTY')
+						return '';
+					if (/^[A-Z_]*$/.test(item))
+						return `\tthis.functions.${item}();`;
+					return `\tthis.match('${item.toUpperCase()}');`;
+				})
 				.join('\n') + '\n} \nelse ';
 	}
-	functionBody += 'syntaxError(' + totalProductions.join(',') + ');';
-	functions[symbol] = new Function('type', functionBody);
+	functionBody += 'this.syntaxError([' + totalProductions.map(item => `'${item}'`).join(',') + ']);';
+	functions[symbol] = new Function(functionBody).bind({
+		functions,
+		getCurrentToken,
+		terminals,
+		translateTerminals,
+		oprelSymbols,
+		opsumSymbols,
+		opmulSymbols,
+		match,
+		syntaxError
+	});
 }
 
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
-
 process.stdin.on('data', function (input) {
 	stdin_input += input;
 });
 
 process.stdin.on('end', function () {
-	functions['STAT']();
+	stdin_input+='EOF';
+	currentToken = getToken();
+	functions['START']();
+	console.log('El analisis sintactico ha finalizado correctamente.');
+	process.exit();
 });
