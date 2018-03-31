@@ -1,11 +1,11 @@
 const grammar = {
 	START: {
 		'FUNCTION START': ['FUNCTION'],
-		'STAT START': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'STAT START': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
 		'EMPTY': ['EOF']
 	},
 	STAT: {
-		'SIMP_STAT': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR'],
+		'SIMP_STAT': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR'],
 		'COMP_STAT': ['IF', 'WHILE', 'FOR', 'FUNCTION']
 	},
 	COMP_STAT: {
@@ -15,22 +15,22 @@ const grammar = {
 		'FUNCTION_STAT': ['FUNCTION']
 	},
 	SIMP_STAT: {
-		'ASSIGN': ['ID'],
+		'F ASSIGN': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR'],
 		'LOG': ['LOG'],
+		'READ': ['READ'],
 		'IMPORT': ['IMPORT', 'FROM'],
-		'RETURN': ['RETURN'],
-		'F': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR']
+		'RETURN': ['RETURN']
 	},
 	IF_STAT: {
 		'if EXPR BLOCK ELSE': ['IF']
 	},
 	ELSE: {
 		'else ELSE_PRIM': ['ELSE'],
-		'EMPTY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'NEWLINE', 'RKEY', 'EOF']
+		'EMPTY': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'RKEY', 'EOF']
 	},
 	ELSE_PRIM: {
 		'IF_STAT': ['IF'],
-		'BLOCK': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'BLOCK': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
 	},
 	WHILE_STAT: {
 		'while EXPR BLOCK': ['WHILE']
@@ -54,36 +54,39 @@ const grammar = {
 	},
 	PARAM_PRIM: {
 		'assign EXPR': ['ASSIGN'],
-		'EMPTY': ['COMMA','RPAR']
+		'EMPTY': ['COMMA', 'RPAR']
 	},
 	FUNC_BODY: {
-		'STAT FUNC_BODY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
+		'STAT FUNC_BODY': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
 		'EMPTY': ['END']
 	},
 	ASSIGN: {
-		'VARIABLE assign EXPR': ['ID']
+		'assign EXPR': ['ASSIGN'],
+		'EMPTY': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'RKEY', 'EOF'],
 	},
 	LOG: {
 		'log lpar EXPR rpar': ['LOG']
+	},
+	READ: {
+		'read lpar EXPR rpar': ['READ']
 	},
 	IMPORT: {
 		'import id SUB_IMPORT': ['IMPORT'],
 		'from id import id': ['FROM']
 	},
 	SUB_IMPORT: {
-		'point id SUB_IMPORT': ['POING'],
-		'EMPTY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'NEWLINE', 'RKEY', 'EOF']
+		'point id SUB_IMPORT': ['POINT'],
+		'EMPTY': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'END', 'RKEY', 'EOF']
 	},
 	RETURN: {
 		'return lpar EXPR rpar': ['RETURN']
 	},
 	BLOCK: {
 		'lkey BLOCK_BODY rkey': ['LKEY'],
-		'STAT': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION']
+		'STAT': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION']
 	},
 	BLOCK_BODY: {
-		'STAT BLOCK_BODY': ['ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
-		'BLOCK_BODY': ['NEWLINE'],
+		'STAT BLOCK_BODY': ['ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION'],
 		'EMPTY': ['RKEY']
 	},
 	EXPR: {
@@ -91,7 +94,7 @@ const grammar = {
 	},
 	EXPR_PRIM: {
 		'or EBOOL EXPR_PRIM': ['OR'],
-		'EMPTY': ['ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'EMPTY': ['ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	EBOOL: {
 		'EXPREL EBOOL_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS'],
@@ -99,21 +102,21 @@ const grammar = {
 	},
 	EBOOL_PRIM: {
 		'and EXPREL EBOOL_PRIM': ['AND'],
-		'EMPTY': ['OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'EMPTY': ['OR', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	EXPREL: {
 		'E EXPREL_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS']
 	},
 	EXPREL_PRIM: {
 		'oprel E': ['OPREL'],
-		'EMPTY': ['AND', 'OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'EMPTY': ['AND', 'OR', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	E: {
 		'T E_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS']
 	},
 	E_PRIM: {
 		'opsum T E_PRIM': ['OPSUM'],
-		'EMPTY': ['OPREL', 'AND', 'OR', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'EMPTY': ['OPREL', 'AND', 'OR', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	T: {
 		'F T_PRIM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR'],
@@ -121,7 +124,7 @@ const grammar = {
 	},
 	T_PRIM: {
 		'opmul F T_PRIM': ['OPMUL'],
-		'EMPTY': ['OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBAR', 'COMMA']
+		'EMPTY': ['OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	F: {
 		'int': ['INT'],
@@ -136,8 +139,8 @@ const grammar = {
 		'lpar EXPR rpar': ['LPAR']
 	},
 	F_PRIM: {
-		'lbra EXPR rbra': ['LKEY'],
-		'EMPTY': ['OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'lbra EXPR rbra': ['LBRA'],
+		'EMPTY': ['OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	ARRAY: {
 		'lbra ITEM_ARRAY rbra': ['lbra']
@@ -165,16 +168,16 @@ const grammar = {
 		'id SUB_VAR VARIABLE_PRIM': ['ID']
 	},
 	VARIABLE_PRIM: {
-		'SUB_VAR_FUNC': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA'],
+		'SUB_VAR_FUNC': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RBRA', 'EOF', 'RKEY', 'COMMA'],
 		'lbra EXPR rbra': ['LBRA']
 	},
 	SUB_VAR: {
 		'point id SUB_VAR': ['POINT'],
-		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA']
+		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RBRA', 'EOF', 'RKEY', 'COMMA']
 	},
 	SUB_VAR_FUNC: {
 		'lpar SUB_VAR_FUNC_PARAM rpar': ['LPAR'],
-		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'NEWLINE', 'RBRA', 'EOF', 'RKEY', 'COMMA']
+		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RBRA', 'EOF', 'RKEY', 'COMMA']
 	},
 	SUB_VAR_FUNC_PARAM: {
 		'EXPR MORE_SUB_VAR_FUNC_PARAM': ['INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'ID', 'NIL', 'LPAR', 'MINUS', 'NOT'],
@@ -218,6 +221,7 @@ const terminals = {
 	'false': 'FALSE',
 	'true': 'TRUE',
 	'log': 'LOG',
+	'leer': 'READ',
 	'importar': 'IMPORT',
 	'desde': 'FROM',
 	'if': 'IF',
@@ -230,7 +234,7 @@ const terminals = {
 	'retorno': 'RETURN',
 	'nil': 'NIL',
 	'id': 'ID',
-	'EOF':'EOF'
+	'EOF': 'EOF'
 };
 const translateTerminals = {
 	'LKEY': '[',
@@ -269,6 +273,7 @@ const translateTerminals = {
 	'FALSE': 'false',
 	'TRUE': 'true',
 	'LOG': 'log',
+	'READ': 'leer',
 	'IMPORT': 'importar',
 	'FROM': 'desde',
 	'IF': 'if',
@@ -283,8 +288,7 @@ const translateTerminals = {
 	'ID': 'identificador',
 	'STRING': 'valor_string',
 	'INT': 'valor_integer',
-	'FLOAT': 'valor_float',
-	'NEWLINE': '\n'
+	'FLOAT': 'valor_float'
 };
 const oprelSymbols = ['LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ'];
 const opsumSymbols = ['PLUS', 'MINUS'];
@@ -318,15 +322,15 @@ const specialOperatorsDict = {
 	':': 'token_dosp'
 };
 const specialOperators = Object.keys(specialOperatorsDict);
-const reservedWords = ['false', 'true', 'for', 'while', 'funcion', 'if', 'in', 'importar', 'else', 'end', 'retorno', 'nil', 'desde', 'todo','EOF'];
-const idRegExp = /[a-z0-9]/i;
+const reservedWords = ['log', 'leer', 'false', 'true', 'for', 'while', 'funcion', 'if', 'in', 'importar', 'else', 'end', 'retorno', 'nil', 'desde', 'todo', 'EOF'];
+const idRegExp = /[a-z0-9_]/i;
 const numRegExp = /[0-9]/;
 const delta = (state, character) => {
 	let filteredOperator;
 	switch (state) {
 		case 1:
 			if (character === ' ' || character === '\t' || !character) return 1;
-			if (/[a-z]/i.test(character)) return 2;
+			if (/[a-z_]/i.test(character)) return 2;
 			filteredOperator = specialOperators.find(
 				(operator) => operator[0] === character
 			);
@@ -379,7 +383,7 @@ const getToken = () => {
 	let lastStatus = 1;
 	let newStatus;
 	let currentLexeme = [];
-	if (stdin_input[0] === '\n') {
+	while (stdin_input[0] === '\n') {
 		line++;
 		stdin_input = stdin_input.slice(1);
 	}
@@ -395,7 +399,7 @@ const getToken = () => {
 					lastChar = currentLexeme.pop();
 					if (lastChar) stdin_input = lastChar + stdin_input;
 					lexeme = currentLexeme.join('');
-					if (reservedWords.includes(lexeme) || lexeme === 'log') {
+					if (reservedWords.includes(lexeme)) {
 						token = {
 							line,
 							column,
@@ -470,6 +474,7 @@ const getToken = () => {
 					};
 					break;
 				default:
+					debugger
 					throw {
 						error: `>>> Error lexico(linea:${line},posicion:${column})`
 					};
@@ -496,7 +501,11 @@ const syntaxError = (listExpectedTokens) => {
 	else if (opsumSymbols.includes(terminalCurrentToken))
 		translatedCurrentToken = translateTerminals.OPSUM[terminalCurrentToken];
 	else translatedCurrentToken = translateTerminals[terminalCurrentToken];
-	const translatedExpectedTokens = listExpectedTokens.map(item => `'${translateTerminals[item]}'`);
+	const translatedExpectedTokens = listExpectedTokens.map(item => {
+		if (item === 'OPREL' || item === 'OPMUL' || item === 'OPSUM')
+			return Object.values(translateTerminals[item]).map(operator => `'${operator}'`);
+		return `'${translateTerminals[item]}'`;
+	});
 	console.log(`<${currentToken.line}:${currentToken.column}> Error sintactico. Encontrado: '${translatedCurrentToken}'; se esperaba: ${translatedExpectedTokens.sort().join(',')}`);
 	process.exit();
 };
@@ -542,7 +551,7 @@ for (const symbol in grammar) {
 			predictionList.map((item) => {
 				if (item === 'OPREL' || item === 'OPSUM' || item === 'OPMUL')
 					return `this.${item.toLowerCase()}Symbols.includes(tokenType)`;
-				return `tokenType === '${item}'`;
+				return `tokenType === '${item.toUpperCase()}'`;
 			}).join(' || ') + '){\n';
 		functionBody +=
 			symbolsInProduction
