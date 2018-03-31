@@ -140,7 +140,7 @@ const grammar = {
 	},
 	F_PRIM: {
 		'lbra EXPR rbra': ['LBRA'],
-		'EMPTY': ['OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
+		'EMPTY': ['ASSIGN', 'OPMUL', 'OPSUM', 'OPREL', 'ELSE', 'ID', 'LOG', 'READ', 'IMPORT', 'FROM', 'RETURN', 'INT', 'FLOAT', 'TRUE', 'FALSE', 'STRING', 'LBRA', 'LKEY', 'NIL', 'LPAR', 'IF', 'WHILE', 'FOR', 'FUNCTION', 'RPAR', 'END', 'RKEY', 'EOF', 'RBRA', 'COMMA']
 	},
 	ARRAY: {
 		'lbra ITEM_ARRAY rbra': ['lbra']
@@ -581,11 +581,12 @@ for (const symbol in grammar) {
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
 process.stdin.on('data', function (input) {
+	if (input.trim()[0] === '#') return;
 	stdin_input += input;
 });
 
 process.stdin.on('end', function () {
-	stdin_input+='EOF';
+	stdin_input += 'EOF';
 	currentToken = getToken();
 	functions['START']();
 	console.log('El analisis sintactico ha finalizado correctamente.');
