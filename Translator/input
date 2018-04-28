@@ -1,0 +1,4 @@
+funcion test(x,y)
+if x==true x=!x
+else x=y&&x
+end
