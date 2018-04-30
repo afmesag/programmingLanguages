@@ -22,7 +22,9 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (TLONParser.StatContext statContext : ctx.stat()) {
 			stringBuilder.append(visitStat(statContext));
+			stringBuilder.append("\n");
 		}
+		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		return (T) stringBuilder;
 	}
 
@@ -57,13 +59,13 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 		else if (ctx.retornar() != null)
 			return visitRetornar(ctx.retornar());
 		else {
-			return (T) (visit(ctx.atom()) + "\n");
+			return (T) visit(ctx.atom());
 		}
 	}
 
 	@Override
 	public T visitAssignment(TLONParser.AssignmentContext ctx) {
-		String s = visitVariable(ctx.variable()) + ctx.ASSIGN().getText();
+		String s = visitVariable(ctx.variable()) + " " + ctx.ASSIGN().getText() + " ";
 		if (ctx.assignment() != null)
 			s += visitAssignment(ctx.assignment());
 		else
@@ -120,10 +122,10 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 		if (!ctx.parametro().isEmpty()) {
 			for (TLONParser.ParametroContext parametroContext : ctx.parametro()) {
 				stringBuilder.append(visitParametro(parametroContext));
-				stringBuilder.append(",");
+				stringBuilder.append(", ");
 			}
 			// Delete last comma
-			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+			stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 		}
 		stringBuilder.append(ctx.CPAR().getText());
 		stringBuilder.append(":");
@@ -168,9 +170,14 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 	@Override
 	public T visitStat_block(TLONParser.Stat_blockContext ctx) {
 		StringBuilder stringBuilder = new StringBuilder();
-		for (TLONParser.StatContext statContext : ctx.stat()) {
-			stringBuilder.append(addIndentation(ctx.depth));
-			stringBuilder.append(visitStat(statContext));
+		if (ctx.OBRACE() == null) {
+			stringBuilder.append(" ");
+			stringBuilder.append(visitStat(ctx.stat(0)));
+		} else {
+			for (TLONParser.StatContext statContext : ctx.stat()) {
+				stringBuilder.append(addIndentation(ctx.depth));
+				stringBuilder.append(visitStat(statContext));
+			}
 		}
 		return (T) stringBuilder.toString();
 	}
@@ -181,12 +188,14 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 		// Simple array [a,b,...]
 		if (ctx.start == null) {
 			// First rule
-			for (TLONParser.ExprContext exprContext : ctx.expr()) {
-				stringBuilder.append(visit(exprContext));
-				stringBuilder.append(",");
+			if (!ctx.expr().isEmpty()) {
+				for (TLONParser.ExprContext exprContext : ctx.expr()) {
+					stringBuilder.append(visit(exprContext));
+					stringBuilder.append(", ");
+				}
+				// Delete last comma
+				stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 			}
-			// Delete last comma
-			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		} else {
 			stringBuilder.append(visit(ctx.start));
 			stringBuilder.append(ctx.POINTS().get(0).getText());
@@ -217,12 +226,14 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		if (ctx.OPAR() != null) {
 			stringBuilder.append(ctx.OPAR().getText());
-			for (TLONParser.ExprContext exprContext : ctx.expr()) {
-				stringBuilder.append(visit(exprContext));
-				stringBuilder.append(",");
+			if (!ctx.expr().isEmpty()) {
+				for (TLONParser.ExprContext exprContext : ctx.expr()) {
+					stringBuilder.append(visit(exprContext));
+					stringBuilder.append(", ");
+				}
+				// Delete last comma
+				stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 			}
-			// Delete last comma
-			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 			stringBuilder.append(ctx.CPAR().getText());
 		} else if (ctx.OKEY() != null) {
 			stringBuilder.append(ctx.OKEY().getText());
@@ -258,22 +269,22 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 
 	@Override
 	public T visitMultiplicationExpr(TLONParser.MultiplicationExprContext ctx) {
-		return (T) (visit(ctx.left) + ctx.op.getText() + visit(ctx.right));
+		return (T) (visit(ctx.left) + " " + ctx.op.getText() + " " + visit(ctx.right));
 	}
 
 	@Override
 	public T visitAdditiveExpr(TLONParser.AdditiveExprContext ctx) {
-		return (T) (visit(ctx.left) + ctx.op.getText() + visit(ctx.right));
+		return (T) (visit(ctx.left) + " " + ctx.op.getText() + " " + visit(ctx.right));
 	}
 
 	@Override
 	public T visitRelationalExpr(TLONParser.RelationalExprContext ctx) {
-		return (T) (visit(ctx.left) + ctx.op.getText() + visit(ctx.right));
+		return (T) (visit(ctx.left) + " " + ctx.op.getText() + " " + visit(ctx.right));
 	}
 
 	@Override
 	public T visitEqualityExpr(TLONParser.EqualityExprContext ctx) {
-		return (T) (visit(ctx.left) + ctx.op.getText() + visit(ctx.right));
+		return (T) (visit(ctx.left) + " " + ctx.op.getText() + " " + visit(ctx.right));
 	}
 
 	@Override
@@ -339,12 +350,14 @@ public class MyVisitor<T> extends TLONBaseVisitor {
 	@Override
 	public T visitObjeto(TLONParser.ObjetoContext ctx) {
 		StringBuilder stringBuilder = new StringBuilder(ctx.OBRACE().getText());
-		for (TLONParser.KeyvalueContext keyvalueContext : ctx.keyvalue()) {
-			stringBuilder.append(visitKeyvalue(keyvalueContext));
-			stringBuilder.append(",");
+		if (!ctx.keyvalue().isEmpty()) {
+			for (TLONParser.KeyvalueContext keyvalueContext : ctx.keyvalue()) {
+				stringBuilder.append(visitKeyvalue(keyvalueContext));
+				stringBuilder.append(", ");
+			}
+			// Delete last comma
+			stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
 		}
-		// Delete last comma
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		stringBuilder.append(ctx.CBRACE().getText());
 		return (T) stringBuilder.toString();
 	}
